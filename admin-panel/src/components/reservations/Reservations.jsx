@@ -22,9 +22,11 @@ class Reservation extends Component {
       })
     .then(res => res.json())
     .then(res => {
-        console.log(res)
         if(res.status === 404){
             this.setState({notFound: true, errorMessage: res.message});
+        }
+        else if (res.status == 403){
+            this.setState({notFound: true, errorMessage: "You have to login to administrator account to get access to this resource"})
         }
         else{
             this.setState({reservations: res, notFound: false})
@@ -42,7 +44,6 @@ class Reservation extends Component {
     }
       })
       .then(res => {
-          console.log(res);
           if(res.status === 200){
               alert("Reservation confirmed");
               let filteredArray = this.state.reservations.filter(e => e.id !== id);
@@ -60,7 +61,6 @@ class Reservation extends Component {
     }
       })
       .then(res => {
-          console.log(res);
           if(res.status === 200){
               alert("Reservation canceled");
               let filteredArray = this.state.reservations.filter(e => e.id !== id);

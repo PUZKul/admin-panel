@@ -21,9 +21,7 @@ class Details extends Component {
         this.fetchReservation(_id);
         
         this.setState({id: _id});
-
      }
-
 
   fetchReservation = (id) =>{
     fetch(this.props.prefix + `/api/library/admins/reservations/${id}`, {

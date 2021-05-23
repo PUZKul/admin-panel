@@ -1,7 +1,17 @@
 import React, { Component } from 'react';
 import { NavLink} from 'react-router-dom';
+import { withRouter } from 'react-router-dom'
 class Menu extends Component {
-    state = {  }
+    state = {
+      login: false
+      }
+
+    logout = () =>{
+      alert("Logout successfully");
+      this.props.clearToken();
+      this.setState({login: false})
+    }
+
     render() { 
         return ( 
             <nav className="navbar sticky-top navbar-expand-lg navbar-dark main-motive" aria-label="Fifth navbar example">
@@ -20,7 +30,12 @@ class Menu extends Component {
                   <NavLink className="nav-link" to='/reservations'>Reservations</NavLink>
                   </li>
                   <li className="nav-item">
-                   <NavLink className="nav-link" to='/login'>Login</NavLink>
+                    {this.props.isLogin ? (
+                        <NavLink className="nav-link" to='/' onClick={() => this.logout()}>Logout</NavLink>
+                    ):(
+                        <NavLink className="nav-link" to='/login'>Login</NavLink>
+                    )}
+                   
                     {/* <a className="nav-link" href="/login">Login</a> */}
                   </li>
                 </ul>
@@ -31,4 +46,4 @@ class Menu extends Component {
     }
 }
  
-export default Menu;
+export default withRouter(Menu);

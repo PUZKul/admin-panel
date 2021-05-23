@@ -5,3 +5,9 @@
 .center-text{
   padding: .375rem 0;
 }
+
+.main-full-window{
+  width: 100vw;
+  height: 80vh;
+}
+

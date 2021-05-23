@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
 import './login.css';
+import { Route , withRouter} from 'react-router-dom';
+
 class Login extends Component {
     state = { 
-        prefix: "https://puz-biblioteka.herokuapp.com",
+       // prefix: "https://puz-biblioteka.herokuapp.com",
         username: "",
         password: ""
      }
@@ -22,25 +24,24 @@ class Login extends Component {
         let loginObject = {username, password};
         var errorFlag = false;
 
-        fetch(this.state.prefix + '/login',  {
+        fetch(this.props.prefix + '/login',  {
             method: 'POST',
             headers: {"Content-Type": "application/json"},
            body: JSON.stringify(loginObject) 
           })
           .then(response => {
-              console.log(response);       
-          })
-          .catch(error => {
-              errorFlag = true;
-              console.log(error);
-          })
-
-          if(!errorFlag){
-              // show error
-              
-          }
+              if(response.status === 200){
+                const token = response.headers.get("authorization")
+                this.props.setToken(token);
+                this.goBack();
+              }
+            
+          });
       }
 
+      goBack = () => {
+        this.props.history.push('/');
+      }
 
     render() { 
         const { username, password} = this.state;
@@ -62,4 +63,4 @@ class Login extends Component {
     }
 }
  
-export default Login;
+export default withRouter(Login);
