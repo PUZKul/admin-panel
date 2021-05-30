@@ -13,8 +13,8 @@ import EditUser from './components/user/EditUser'
 class App extends Component {
   state = {
     isLogin: false,
-    prefix: "http://localhost:8080",
-    prefix2: "https://puz-biblioteka.herokuapp.com",
+    prefix2: "http://localhost:8080",
+    prefix: "https://puz-biblioteka.herokuapp.com",
     token: ""
  }
  
