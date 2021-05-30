@@ -26,7 +26,7 @@ class Details extends Component {
   fetchReservation = (id) =>{
     fetch(this.props.prefix + `/api/library/admins/reservations/${id}`, {
        method: 'GET',
-       headers: {"Content-Type": "application/json", "Authorization": this.props.token}
+       headers: {"Content-Type": "application/json", "Authorization": this.props.getToken()}
       })
     .then(res => res.json())
     .then(res => {
@@ -44,7 +44,7 @@ class Details extends Component {
   fetchUser= (id) =>{
     fetch(this.props.prefix + `/api/library/admins/users/${id}`, {
        method: 'GET',
-       headers: {"Content-Type": "application/json", "Authorization": this.props.token}
+       headers: {"Content-Type": "application/json", "Authorization": this.props.getToken()}
       })
     .then(res => res.json())
     .then(res => {
@@ -63,7 +63,7 @@ class Details extends Component {
        method: 'POST',
        headers: {
         "Content-Type": "application/json",
-        "Authorization": this.props.token
+        "Authorization": this.props.getToken()
     }
       })
       .then(res => {
@@ -81,7 +81,7 @@ class Details extends Component {
        method: 'POST',
        headers: {
         "Content-Type": "application/json",
-        "Authorization": this.props.token
+        "Authorization": this.props.getToken()
     }
       })
       .then(res => {

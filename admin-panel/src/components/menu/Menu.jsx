@@ -23,8 +23,11 @@ class Menu extends Component {
              
               <div className="collapse navbar-collapse justify-content-md-end" id="navbarsExample05">
                 <ul className="navbar-nav">
+                <li className="nav-item">
+                  <NavLink className="nav-link" to='/users'>Users</NavLink>
+                  </li>
                   <li className="nav-item">
-                    <a className="nav-link" href="#">Borrow</a>
+                  <NavLink className="nav-link" to='/borrow'>Borrow</NavLink>
                   </li>
                   <li className="nav-item">
                   <NavLink className="nav-link" to='/reservations'>Reservations</NavLink>

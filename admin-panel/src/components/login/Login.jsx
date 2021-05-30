@@ -1,12 +1,14 @@
 import React, { Component } from 'react';
 import './login.css';
-import { Route , withRouter} from 'react-router-dom';
+import {withRouter} from 'react-router-dom';
 
 class Login extends Component {
     state = { 
        // prefix: "https://puz-biblioteka.herokuapp.com",
         username: "",
-        password: ""
+        password: "",
+        error: false,
+        message: ""
      }
 
     usernameHandler = (name) =>{
@@ -22,7 +24,6 @@ class Login extends Component {
         let username = this.state.username;
         let password = this.state.password;
         let loginObject = {username, password};
-        var errorFlag = false;
 
         fetch(this.props.prefix + '/login',  {
             method: 'POST',
@@ -33,7 +34,11 @@ class Login extends Component {
               if(response.status === 200){
                 const token = response.headers.get("authorization")
                 this.props.setToken(token);
+                this.setState({error: false, message: ""})
                 this.goBack();
+              }
+              else if(response.status === 401){
+                  this.setState({error: true, message: "Login failed!"});
               }
             
           });
@@ -44,7 +49,7 @@ class Login extends Component {
       }
 
     render() { 
-        const { username, password} = this.state;
+        const {message, username, password} = this.state;
         return ( 
             <section className="login-container ">
             <form className="card card-body login-card" onSubmit={this.submitHandler}>
@@ -58,6 +63,7 @@ class Login extends Component {
                 </div>
                 <button type="submit" className="btn btn-primary">Sign in</button>
             </form>
+            <h3 className="text-center mt-2 text-danger">{message}</h3>
           </section>
          );
     }

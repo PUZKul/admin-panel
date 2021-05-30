@@ -18,14 +18,14 @@ class Reservation extends Component {
   fetchReservations = (page, limit, username) =>{
     fetch(this.props.prefix + `/api/library/admins/reservations?page=${page}&limit=${limit}&username=${username}`, {
        method: 'GET',
-       headers: {"Content-Type": "application/json", "Authorization": this.props.token}
+       headers: {"Content-Type": "application/json", "Authorization": this.props.getToken()}
       })
     .then(res => res.json())
     .then(res => {
         if(res.status === 404){
             this.setState({notFound: true, errorMessage: res.message});
         }
-        else if (res.status == 403){
+        else if (res.status === 403){
             this.setState({notFound: true, errorMessage: "You have to login to administrator account to get access to this resource"})
         }
         else{
@@ -40,7 +40,7 @@ class Reservation extends Component {
        method: 'POST',
        headers: {
         "Content-Type": "application/json",
-        "Authorization": this.props.token
+        "Authorization": this.props.getToken()
     }
       })
       .then(res => {
@@ -57,7 +57,7 @@ class Reservation extends Component {
        method: 'POST',
        headers: {
         "Content-Type": "application/json",
-        "Authorization": this.props.token
+        "Authorization": this.props.getToken()
     }
       })
       .then(res => {
