@@ -7,10 +7,11 @@ class Users extends Component {
         notFound: false,
         username: "",
         errorMessage: "",
+        page: 1
      }
 
     componentDidMount(){
-        this.fetchUsers(0, 15, this.state.username);
+        this.fetchUsers(0, 25, this.state.username);
     }
      
     fetchUsers = (page, limit, username) =>{
@@ -38,12 +39,12 @@ class Users extends Component {
 
   filterByUsername = (e) =>{
     e.preventDefault();
-    this.fetchUsers(0, 15, this.state.username);
+    this.fetchUsers(0, 20, this.state.username);
   }
 
     render() { 
         
-        const {users, notFound, errorMessage} = this.state;
+        const {users, notFound, errorMessage, page} = this.state;
 
         if(!users.length && notFound===false){
             return (<div>Loading...</div>)
@@ -80,7 +81,7 @@ class Users extends Component {
             {this.state.users.map((user, index) =>{
                 return(
                     <tr key={index}>
-                      <th scope="row">{index}</th>
+                      <th scope="row">{index + 1}</th>
                       <td>{user.username}</td>
                       <td>{user.firstName} {user.lastName}</td>
                       <td ><span className="cutText address">{user.address}</span></td>
@@ -97,6 +98,19 @@ class Users extends Component {
 
             </tbody>
             </table>
+
+            <div >
+            <ul className="pagination justify-content-center">
+                <li className="page-item disabled">
+                    <button className="page-link" aria-disabled="true">Previous</button>
+                </li>
+                <li class="page-item"><span className="page-link">{page}</span></li>
+                <li className="page-item ">
+                    <button className="page-link" aria-disabled="true">Next</button>
+                </li>
+            </ul>
+            </div>
+
             </section>
          );
     }

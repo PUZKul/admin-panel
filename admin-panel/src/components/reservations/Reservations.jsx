@@ -7,7 +7,8 @@ class Reservation extends Component {
         reservations: [],
         username: "",
         notFound: false,
-        errorMessage: ""
+        errorMessage: "",
+        page: 1
      }
 
     componentDidMount(){
@@ -49,6 +50,9 @@ class Reservation extends Component {
               let filteredArray = this.state.reservations.filter(e => e.id !== id);
               this.setState({reservations: filteredArray});
           }
+          else if (res.status === 400){
+            this.setState({notFound: true, errorMessage: ""})
+        }
       });
   }
 
@@ -66,6 +70,7 @@ class Reservation extends Component {
               let filteredArray = this.state.reservations.filter(e => e.id !== id);
               this.setState({reservations: filteredArray});
           }
+          
       });
   }
 
@@ -79,7 +84,7 @@ class Reservation extends Component {
   }
 
     render() { 
-        const {reservations, notFound, errorMessage} = this.state;
+        const {reservations, notFound, errorMessage, page} = this.state;
         if(!reservations.length && notFound===false){
             return (<div>Loading...</div>)
         }
@@ -96,7 +101,7 @@ class Reservation extends Component {
             {this.searchBar()}            
             {this.state.reservations.map((reservation, index) =>{
                 return(
-                <div  key={index} className="card mb-3">
+                <div  key={index} className="lib-card card-hover shadow-sm  p-3 mb-3 bg-white rounded">
                     <div className="card-body">
                         <h5 className="card-title">#{reservation.id}. {reservation.title}</h5>
                         <h6 className="card-subtitle mb-2 text-muted">{Moment(reservation.dateReservation).format('YYYY-MM-DD')}</h6>
@@ -108,7 +113,8 @@ class Reservation extends Component {
                 </div>
                 )
             })}
-            
+
+
             </section>
          );
     }

@@ -24,7 +24,7 @@ class Borrow extends Component {
         if(res.status === 404){
             this.setState({notFound: true, errorMessage: res.message});
         }
-        else if (res.status == 403){
+        else if (res.status === 403){
             this.setState({notFound: true, errorMessage: "You have to login to administrator account to get access to this resource"})
         }
         else{
@@ -94,7 +94,7 @@ class Borrow extends Component {
             {this.searchBar()}            
             {this.state.borrow.map((borrow, index) =>{
                 return(
-                <div  key={index} className="card mb-3">
+                <div  key={index} className="lib-card card-hover shadow-sm p-3 mb-3 bg-white rounded">
                     <div className="card-body">
                         <h5 className="card-title">#{borrow.id}. {borrow.title}</h5>
                         <h6 className="card-subtitle mb-2 text-muted">{Moment(borrow.dateIssued).format('YYYY-MM-DD')}</h6>

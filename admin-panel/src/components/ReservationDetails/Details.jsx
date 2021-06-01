@@ -107,7 +107,7 @@ class Details extends Component {
             )
         }
             return ( 
-                <section className="card">         
+                <section className="shadow-sm p-3 mb-3 bg-white rounded">         
                     <div className="card-body">
                             <h5 className="card-title"> {reservation.title}</h5>
                             <h6 className="card-subtitle mb-2 text-muted">Reservation ID: #{reservation.id} </h6>

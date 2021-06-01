@@ -58,20 +58,8 @@ class EditUser extends Component {
       });
   }
 
-  extend = (id) => {
-    // fetch(`${this.props.prefix}/api/library/admins/rental/extend/${id}`,  {
-    //    method: 'POST',
-    //    headers: {
-    //     "Content-Type": "application/json",
-    //     "Authorization": this.props.getToken()
-    // }
-    //   })
-    //   .then(res => {
-    //       if(res.status === 200){
-    //           alert("Book extended");
-    //           
-    //       }
-    //   });
+  goBack = () => {
+    this.props.history.push('/users');
   }
 
   usernameHandler = (name) =>{
@@ -98,7 +86,7 @@ class EditUser extends Component {
         return ( 
             <section className="">
                 <h3>Edit <b> {user.username} </b> account</h3>   
-                <div class="card mt-1">
+                <div class="shadow-sm p-3 mb-3 bg-white rounded">
                     <div class="card-body">      
                     <div className="input-group input-group-sm mb-3">
                         <div className="input-group-prepend edit-icon">
@@ -142,13 +130,13 @@ class EditUser extends Component {
                         <input type="text" className="form-control" value={user.comment} aria-label="Small" aria-describedby="inputGroup-sizing-sm"/>
                     </div>
 
-                    <button type="button" className="btn btn-outline-secondary">Back</button>
+                    <button type="button" className="btn btn-outline-secondary" onClick={() => this.goBack()}>Back</button>
                     <button type="button" className="btn btn-success ms-2">Save</button>
                     </div>  
                 </div>
 
                 <h3 className="mt-5">Advanced</h3>
-                <div class="card mt-1">
+                <div class="shadow-sm p-3 mb-3 bg-white rounded">
                     <div class="card-body">
                     <label for="basic-url">Books limit</label>
                         <div className="input-group mb-3">
@@ -159,14 +147,19 @@ class EditUser extends Component {
                         </div>
 
                         <label for="banned">Is banned</label>
-                        <div className="dropdown">
-                            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                {user.isBanned ? "Banned" : "Not Banned"}
+                        <div className="dropdown mb-4">
+                            <button className="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                {user.banned ? "Banned" : "Not Banned"}
                             </button>
-                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton2">
-                                <a class="dropdown-item" href="#">Banned</a>
-                                <a class="dropdown-item" href="#">Not Banned</a>
+                            <div className="dropdown-menu" aria-labelledby="dropdownMenuButton2">
+                                <a className="dropdown-item" href="#">Banned</a>
+                                <a className="dropdown-item" href="#">Not Banned</a>
                             </div>
+                        </div>
+                        <hr/>
+                        <label>Delete account</label>
+                        <div>
+                        <button className="btn btn-danger">Delete</button>
                         </div>
                     </div>
                 </div>
