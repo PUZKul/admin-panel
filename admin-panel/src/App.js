@@ -9,12 +9,13 @@ import Main from './components/main/Main'
 import Borrow from './components/borrow/Borrow'
 import Users from './components/user/Users'
 import EditUser from './components/user/EditUser'
+import Request from './components/messages/Request'
 
 class App extends Component {
   state = {
     isLogin: false,
-    prefix2: "http://localhost:8080",
-    prefix: "https://puz-biblioteka.herokuapp.com",
+    prefix: "http://localhost:8080",
+    prefix2: "https://puz-biblioteka.herokuapp.com",
     token: ""
  }
  
@@ -54,9 +55,9 @@ class App extends Component {
               <Route path='/' exact render={() => <Main/> } /> 
               <Route path='/login' render={() => <Login prefix={this.state.prefix} setToken={this.setToken}/> } /> 
               <Route path='/borrow' render={() => <Borrow prefix={this.state.prefix}  getToken={this.getLocalToken}/> } /> 
+              <Route path='/requests' render={() => <Request prefix={this.state.prefix}  getToken={this.getLocalToken}/> } /> 
               <Route path={'/users/:id'} render={() => <EditUser prefix={this.state.prefix}  getToken={this.getLocalToken}/> } /> 
               <Route path={'/users'} render={() => <Users prefix={this.state.prefix}  getToken={this.getLocalToken}/> } /> 
-              
               <Route path={'/reservations/:id'}  render={() => <Details prefix={this.state.prefix} getToken={this.getLocalToken}/> } /> 
               <Route path={'/reservations'}  render={() => <Reservations prefix={this.state.prefix} getToken={this.getLocalToken}/> } />
             </Switch>

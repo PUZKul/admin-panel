@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { NavLink} from 'react-router-dom';
 import { withRouter } from 'react-router-dom'
+
+
 class EditUser extends Component {
     state = {
         id: "",
@@ -9,6 +11,7 @@ class EditUser extends Component {
         lastName: "",
         address: "",
         phone: "",
+        bookLimit: 3,
         notFound: false,
         errorMessage: "",
         user: null
@@ -31,19 +34,27 @@ class EditUser extends Component {
           })
         .then(res => res.json())
         .then(res => {
-            console.log(res)
+            
             if(res.status === 404){
                 this.setState({notFound: true, errorMessage: res.message});
             }
+            else if (res.status === 403){
+                this.setState({notFound: true, errorMessage: "You have to login to administrator account to get access to this resource"})
+            }
             else{
                 this.setState({user: res, notFound: false, ready: true})
+                this.setState({id: res.id, email: res.email, comment: res.comment, firstName: res.firstName, lastName: res.lastName, address: res.address, phone: res.phone, bookLimit: res.maxBooks});
             }       
         })
       }
 
-  edit = (id) => {
-    fetch(`${this.props.prefix}/api/library/admins/users/edit/${id}`,  {
+  edit = () => {
+    console.log("here");
+    console.log(this.getEditUserObject());
+
+    fetch(`${this.props.prefix}/api/library/admins/users/edit/${this.state.user.username}`,  {
        method: 'POST',
+       body: JSON.stringify(this.getEditUserObject()),
        headers: {
         "Content-Type": "application/json",
         "Authorization": this.props.getToken()
@@ -51,19 +62,46 @@ class EditUser extends Component {
       })
       .then(res => {
           if(res.status === 200){
-              alert("Book returned");
-              let filteredArray = this.state.borrow.filter(e => e.id !== id);
-              this.setState({borrow: filteredArray});
+              alert("Data changed successfully");
           }
       });
   }
 
-  goBack = () => {
-    this.props.history.push('/users');
+  increaseLimit = () =>{
+    fetch(`${this.props.prefix}/api/library/admins/users/${this.state.user.username}/bookLimit`,  {
+        method: 'POST',
+        body: JSON.stringify(this.getEditLimitObject()),
+        headers: {
+         "Content-Type": "application/json",
+         "Authorization": this.props.getToken()
+     }
+       })
+       .then(res => {
+           if(res.status === 200){
+               alert("Limit changed successfully");
+           }
+       });
   }
 
-  usernameHandler = (name) =>{
-    this.setState({username: name.target.value});
+  getEditUserObject = () =>{
+    let firstName = this.state.firstName === this.state.user.firstName? "" : this.state.firstName;
+    let lastName = this.state.lastName === this.state.user.lastName? "" : this.state.lastName;
+    let phone = this.state.phone === this.state.user.phone? "" : this.state.phone;
+    let address = this.state.address === this.state.user.address? "" : this.state.address;
+    let email = this.state.email === this.state.user.email? "" : this.state.email;
+    let comment = this.state.comment === this.state.user.comment? "" : this.state.comment;
+
+    return {firstName, lastName, phone, address, email, comment};
+  }
+
+  getEditLimitObject = () =>{
+    let limit = this.state.bookLimit < 1 ? 3 : this.state.bookLimit
+
+    return {limit};
+  }
+
+  dataHandler = (e) =>{
+    this.setState({[e.target.name]: e.target.value});
 }   
 
   filterByUsername = (e) =>{
@@ -71,8 +109,49 @@ class EditUser extends Component {
     this.fetchBorrow(0, 10, this.state.username);
   }
 
+   myFunction = () => {
+    document.getElementById("myDropdown").classList.toggle("show");
+  }
+
+  goBack = () => {
+      this.props.history.goBack();
+    //this.props.history.push('/users');
+  }
+
+  activate = () =>{
+
+    fetch(`${this.props.prefix}/api/library/admins/users/${this.state.user.username}/activate`,  {
+        method: 'GET',
+        headers: {
+         "Authorization": this.props.getToken()
+     }
+       })
+       .then(res => {
+           if(res.status === 200){
+               alert("User account activated");
+               this.setState(prevState => ({user: {...prevState.user, banned: false}}));
+           }
+       });
+  }
+
+  deactivate = () =>{
+   
+  fetch(`${this.props.prefix}/api/library/admins/users/${this.state.user.username}/deactivate/User banned by administrator`,  {
+      method: 'GET',
+      headers: {
+       "Authorization": this.props.getToken()
+   }
+     })
+     .then(res => {
+         if(res.status === 200){
+             alert("User account deactivated");
+             this.setState(prevState => ({user: {...prevState.user, banned: true}}));
+         }
+     });
+}
+
     render() { 
-        const {user, notFound, errorMessage} = this.state;
+        const {user, notFound, errorMessage, firstName, lastName, phone, address, comment, email, bookLimit} = this.state;
         if(user === null && notFound===false){
             return (<div>Loading...</div>)
         }
@@ -86,80 +165,74 @@ class EditUser extends Component {
         return ( 
             <section className="">
                 <h3>Edit <b> {user.username} </b> account</h3>   
-                <div class="shadow-sm p-3 mb-3 bg-white rounded">
-                    <div class="card-body">      
+                <div className="card mt-1">
+                    <div className="card-body">      
                     <div className="input-group input-group-sm mb-3">
                         <div className="input-group-prepend edit-icon">
                         <span className="input-group-text" id="inputGroup-sizing-sm">First name</span>
                         </div>
-                        <input type="text" className="form-control" value={user.firstName} aria-label="Small" aria-describedby="inputGroup-sizing-sm"/>
+                        <input type="text" name="firstName" className="form-control" value={firstName} aria-label="Small" onChange={this.dataHandler} aria-describedby="inputGroup-sizing-sm"/>
                     </div>
 
                     <div className="input-group input-group-sm mb-3">
                         <div className="input-group-prepend edit-icon">
                         <span className="input-group-text" id="inputGroup-sizing-sm">Last name</span>
                         </div>
-                        <input type="text" className="form-control" value={user.lastName} aria-label="Small" aria-describedby="inputGroup-sizing-sm"/>
+                        <input type="text" name="lastName" className="form-control" value={lastName} aria-label="Small" onChange={this.dataHandler} aria-describedby="inputGroup-sizing-sm"/>
                     </div>
 
                     <div className="input-group input-group-sm mb-3">
                         <div className="input-group-prepend edit-icon">
                         <span className="input-group-text" id="inputGroup-sizing-sm">Address</span>
                         </div>
-                        <input type="text" className="form-control" value={user.address} aria-label="Small" aria-describedby="inputGroup-sizing-sm"/>
+                        <input type="text" name="address" className="form-control" value={address} aria-label="Small" onChange={this.dataHandler} aria-describedby="inputGroup-sizing-sm"/>
                     </div>
 
                     <div className="input-group input-group-sm mb-3">
                         <div className="input-group-prepend edit-icon">
                         <span className="input-group-text" id="inputGroup-sizing-sm">Email</span>
                         </div>
-                        <input type="text" className="form-control" value={user.email} aria-label="Small" aria-describedby="inputGroup-sizing-sm"/>
+                        <input type="text" name="email" className="form-control" value={email} aria-label="Small" onChange={this.dataHandler} aria-describedby="inputGroup-sizing-sm"/>
                     </div>
 
                     <div className="input-group input-group-sm mb-3">
                         <div className="input-group-prepend edit-icon">
                         <span className="input-group-text" id="inputGroup-sizing-sm">Phone</span>
                         </div>
-                        <input type="text" className="form-control" value={user.phone} aria-label="Small" aria-describedby="inputGroup-sizing-sm"/>
+                        <input type="text" name="phone" className="form-control" value={phone} aria-label="Small" onChange={this.dataHandler} aria-describedby="inputGroup-sizing-sm"/>
                     </div>
 
                     <div className="input-group input-group-sm mb-3">
                         <div className="input-group-prepend edit-icon">
                         <span className="input-group-text" id="inputGroup-sizing-sm">Comment</span>
                         </div>
-                        <input type="text" className="form-control" value={user.comment} aria-label="Small" aria-describedby="inputGroup-sizing-sm"/>
+                        <input type="text" name="comment" className="form-control" value={comment} aria-label="Small" onChange={this.dataHandler} aria-describedby="inputGroup-sizing-sm"/>
                     </div>
 
                     <button type="button" className="btn btn-outline-secondary" onClick={() => this.goBack()}>Back</button>
-                    <button type="button" className="btn btn-success ms-2">Save</button>
+                    <button type="button" className="btn btn-success ms-2" onClick={() => this.edit()}>Save</button>
                     </div>  
                 </div>
 
                 <h3 className="mt-5">Advanced</h3>
-                <div class="shadow-sm p-3 mb-3 bg-white rounded">
-                    <div class="card-body">
+                <div className="card mt-1">
+                    <div className="card-body">
                     <label for="basic-url">Books limit</label>
                         <div className="input-group mb-3">
                         <div className="input-group-prepend">
-                        <button class="btn btn-success" type="button">Confirm</button>
+                        <button className="btn btn-success" type="button" onClick={() => this.increaseLimit()}>Confirm</button>
                         </div>
-                        <input type="text" className="form-control" value={user.maxBooks} id="basic-url" aria-describedby="basic-addon3"/>
+                        <input type="number" name="bookLimit" className="form-control" value={bookLimit} onChange={this.dataHandler} id="basic-url" aria-describedby="basic-addon3"/>
                         </div>
 
-                        <label for="banned">Is banned</label>
-                        <div className="dropdown mb-4">
-                            <button className="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                {user.banned ? "Banned" : "Not Banned"}
-                            </button>
-                            <div className="dropdown-menu" aria-labelledby="dropdownMenuButton2">
-                                <a className="dropdown-item" href="#">Banned</a>
-                                <a className="dropdown-item" href="#">Not Banned</a>
-                            </div>
-                        </div>
-                        <hr/>
-                        <label>Delete account</label>
+                        <label>Is active</label>
                         <div>
-                        <button className="btn btn-danger">Delete</button>
+                        {
+                        user.banned? 
+                            <button type="button" className="btn btn-warning" onClick={() => this.activate()}>Activate account</button>
+                            :
+                            <button type="button" className="btn btn-danger" onClick={() => this.deactivate()}>Deactivate account</button>
+                        }
                         </div>
                     </div>
                 </div>

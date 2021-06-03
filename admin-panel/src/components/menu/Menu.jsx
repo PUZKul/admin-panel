@@ -24,6 +24,9 @@ class Menu extends Component {
               <div className="collapse navbar-collapse justify-content-md-end" id="navbarsExample05">
                 <ul className="navbar-nav">
                 <li className="nav-item">
+                  <NavLink className="nav-link" to='/requests'>Requests</NavLink>
+                  </li>
+                <li className="nav-item">
                   <NavLink className="nav-link" to='/users'>Users</NavLink>
                   </li>
                   <li className="nav-item">
