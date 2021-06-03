@@ -107,23 +107,23 @@ class Request extends Component {
   }
 
   cancelRequest = (id) =>{
-    fetch(`${this.props.prefix}/api/library/admins/requests/reject/${id}`,  {
-        method: 'POST',
-        headers: {
-         "Content-Type": "application/json",
-         "Authorization": this.props.getToken()
-     }
-       })
-       .then(res => {
-        if(res.status === 200){
-            alert("Request rejected");
-            this.setState({notFound: false, errorMessage: ""});
-        }
-        else{
-            this.setState({notFound: true, errorMessage: res.message});
-        }
+    // fetch(`${this.props.prefix}/api/library/admins/requests/reject/${id}`,  {
+    //     method: 'POST',
+    //     headers: {
+    //      "Content-Type": "application/json",
+    //      "Authorization": this.props.getToken()
+    //  }
+    //    })
+    //    .then(res => {
+    //     if(res.status === 200){
+    //         alert("Request rejected");
+    //         this.setState({notFound: false, errorMessage: ""});
+    //     }
+    //     else{
+    //         this.setState({notFound: true, errorMessage: res.message});
+    //     }
            
-       });
+    //    });
   }
 
   dataHandler = (e) =>{
