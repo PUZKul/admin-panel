@@ -14,8 +14,8 @@ import Request from './components/messages/Request'
 class App extends Component {
   state = {
     isLogin: false,
-    prefix2: "http://localhost:8080",
-    prefix: "https://puz-biblioteka.herokuapp.com",
+    prefix: "http://localhost:8080",
+    prefix2: "https://puz-biblioteka.herokuapp.com",
     token: ""
  }
  
@@ -24,7 +24,6 @@ class App extends Component {
  }
 
  getLocalToken = () =>{
-   console.log("get");
   const _login = localStorage.getItem('isLogin') === 'true';
   if (_login){
     const localToken = localStorage.getItem('token');

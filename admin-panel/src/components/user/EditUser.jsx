@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { NavLink} from 'react-router-dom';
 import { withRouter } from 'react-router-dom'
-
+import Confirmation from '../utils/Confirmation'
 
 class EditUser extends Component {
     state = {
@@ -14,6 +14,7 @@ class EditUser extends Component {
         bookLimit: 3,
         notFound: false,
         errorMessage: "",
+        action: null,
         user: null
      }
 
@@ -49,8 +50,6 @@ class EditUser extends Component {
       }
 
   edit = () => {
-    console.log("here");
-    console.log(this.getEditUserObject());
 
     fetch(`${this.props.prefix}/api/library/admins/users/edit/${this.state.user.username}`,  {
        method: 'POST',
@@ -62,7 +61,7 @@ class EditUser extends Component {
       })
       .then(res => {
           if(res.status === 200){
-              alert("Data changed successfully");
+              this.closePopup();
           }
       });
   }
@@ -78,7 +77,7 @@ class EditUser extends Component {
        })
        .then(res => {
            if(res.status === 200){
-               alert("Limit changed successfully");
+               this.closePopup();
            }
        });
   }
@@ -128,7 +127,8 @@ class EditUser extends Component {
        })
        .then(res => {
            if(res.status === 200){
-               alert("User account activated");
+            //    alert("User account activated");
+            this.closePopup();
                this.setState(prevState => ({user: {...prevState.user, banned: false}}));
            }
        });
@@ -144,10 +144,25 @@ class EditUser extends Component {
      })
      .then(res => {
          if(res.status === 200){
-             alert("User account deactivated");
+            //  alert("User account deactivated");
+            this.closePopup();
              this.setState(prevState => ({user: {...prevState.user, banned: true}}));
          }
      });
+}
+
+closePopup = () =>{
+    const el1 = document.querySelector('.modal-backdrop')
+    const el2 = document.querySelector('#confirmId')
+    el2.classList.remove('show');
+    el1.classList.remove('show');
+    el1.classList.remove('fade');
+    el1.classList.remove('modal-backdrop');
+  }
+
+
+setAction = (action) =>{
+    this.setState({action: action});
 }
 
     render() { 
@@ -210,7 +225,7 @@ class EditUser extends Component {
                     </div>
 
                     <button type="button" className="btn btn-outline-secondary" onClick={() => this.goBack()}>Back</button>
-                    <button type="button" className="btn btn-success ms-2" onClick={() => this.edit()}>Save</button>
+                    <button type="button" className="btn btn-success ms-2" data-bs-toggle="modal" data-bs-target="#confirmId" onClick={() => this.setAction(this.edit)}>Save</button>
                     </div>  
                 </div>
 
@@ -220,7 +235,7 @@ class EditUser extends Component {
                     <label for="basic-url">Books limit</label>
                         <div className="input-group mb-3">
                         <div className="input-group-prepend">
-                        <button className="btn btn-success" type="button" onClick={() => this.increaseLimit()}>Confirm</button>
+                        <button className="btn btn-success" type="button" data-bs-toggle="modal" data-bs-target="#confirmId" onClick={() => this.setAction(this.increaseLimit)}>Confirm</button>
                         </div>
                         <input type="number" name="bookLimit" className="form-control" value={bookLimit} onChange={this.dataHandler} id="basic-url" aria-describedby="basic-addon3"/>
                         </div>
@@ -229,15 +244,15 @@ class EditUser extends Component {
                         <div>
                         {
                         user.banned? 
-                            <button type="button" className="btn btn-warning" onClick={() => this.activate()}>Activate account</button>
+                            <button type="button" className="btn btn-warning" data-bs-toggle="modal" data-bs-target="#confirmId" onClick={() => this.setAction(this.activate)} >Activate account</button>
                             :
-                            <button type="button" className="btn btn-danger" onClick={() => this.deactivate()}>Deactivate account</button>
+                            <button type="button" className="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmId" onClick={() => this.setAction(this.deactivate)}>Deactivate account</button>
                         }
                         </div>
                     </div>
                 </div>
-      
-                             
+                {Confirmation(this.state.action)}
+                
             </section>
          );
     }

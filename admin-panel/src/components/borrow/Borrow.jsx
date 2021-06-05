@@ -10,7 +10,7 @@ class Borrow extends Component {
      }
 
     componentDidMount(){
-        this.fetchBorrow(0, 10, this.state.username);
+        this.fetchBorrow(0, 15, this.state.username);
     }
      
 

@@ -70,8 +70,7 @@ class Details extends Component {
           console.log(res);
           if(res.status === 200){
               alert("Reservation confirmed");
-              let filteredArray = this.state.reservations.filter(e => e.id !== id);
-              this.setState({reservations: filteredArray});
+              
           }
       });
   }
@@ -88,8 +87,7 @@ class Details extends Component {
           console.log(res);
           if(res.status === 200){
               alert("Reservation canceled");
-              let filteredArray = this.state.reservations.filter(e => e.id !== id);
-              this.setState({reservations: filteredArray});
+              
           }
       });
   }

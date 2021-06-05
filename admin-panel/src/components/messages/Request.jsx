@@ -5,6 +5,7 @@ import { withRouter } from 'react-router-dom'
 class Request extends Component {
     state = {
         requests: [],
+        currentRequest: null,
         username: "",
         notFound: false,
         errorMessage: "",
@@ -38,26 +39,6 @@ class Request extends Component {
     })
   }
 
-
-
-  cancelReservation = (id) => {
-    fetch(`${this.props.prefix}/api/library/admins/reservations/cancel/${id}`,  {
-       method: 'POST',
-       headers: {
-        "Content-Type": "application/json",
-        "Authorization": this.props.getToken()
-    }
-      })
-      .then(res => {
-          if(res.status === 200){
-              alert("Reservation canceled");
-              let filteredArray = this.state.reservations.filter(e => e.id !== id);
-              this.setState({reservations: filteredArray});
-          }
-          
-      });
-  }
-
   usernameHandler = (name) =>{
     this.setState({username: name.target.value});
 }   
@@ -89,7 +70,7 @@ class Request extends Component {
   }
 
     increaseLimit = () =>{
-    fetch(`${this.props.prefix}/api/library/admins/users/${this.state.username}/bookLimit`,  {
+    fetch(`${this.props.prefix}/api/library/admins/users/${this.state.currentRequest.author}/bookLimit`,  {
         method: 'POST',
         body: JSON.stringify(this.getEditLimitObject()),
         headers: {
@@ -99,39 +80,78 @@ class Request extends Component {
        })
        .then(res => {
            if(res.status === 200){
-              // confirmRequest();
-               alert("Limit changed successfully");
-
+               this.confirmRequest();
            }
        });
   }
 
-  cancelRequest = (id) =>{
-    // fetch(`${this.props.prefix}/api/library/admins/requests/reject/${id}`,  {
-    //     method: 'POST',
-    //     headers: {
-    //      "Content-Type": "application/json",
-    //      "Authorization": this.props.getToken()
-    //  }
-    //    })
-    //    .then(res => {
-    //     if(res.status === 200){
-    //         alert("Request rejected");
-    //         this.setState({notFound: false, errorMessage: ""});
-    //     }
-    //     else{
-    //         this.setState({notFound: true, errorMessage: res.message});
-    //     }
+  confirmRequest = () =>{
+    
+    fetch(`${this.props.prefix}/api/library/admins/requests/confirm/${this.state.currentRequest.id}`,  {
+        method: 'POST',
+        headers: {
+         "Content-Type": "application/json",
+         "Authorization": this.props.getToken()
+     }
+       })
+       .then(res => {
+           if(res.status === 200){
+            //alert("Limit changed successfully");
+            this.closePopup();
+            
+            let filteredArray = this.state.requests.filter(e => e.id !== this.state.currentRequest.id);
+            if(filteredArray.length==0){
+                this.setState({requests: filteredArray, notFound: true, errorMessage: "Not found"});
+            }
+            else{
+                this.setState({requests: filteredArray, notFound: false, errorMessage: ""});
+            }
+               
+           }
+       });
+  }
+
+  closePopup = () =>{
+    const el1 = document.querySelector('.modal-backdrop')
+    const el2 = document.querySelector('#exampleModal')
+    el2.classList.remove('show');
+    el1.classList.remove('show');
+    el1.classList.remove('fade');
+    el1.classList.remove('modal-backdrop');
+  }
+
+  cancelRequest = (id) =>{   
+    fetch(`${this.props.prefix}/api/library/admins/requests/reject/${id}`,  {
+        method: 'POST',
+        headers: {
+         "Content-Type": "application/json",
+         "Authorization": this.props.getToken()
+     }
+       })
+       .then(res => {
+        if(res.status === 200){
+            alert("Request rejected");
+            let filteredArray = this.state.requests.filter(e => e.id !== id);
+            if(filteredArray.length==0){
+                this.setState({requests: filteredArray, notFound: true, errorMessage: "Not found"});
+            }
+            else{
+                this.setState({requests: filteredArray, notFound: false, errorMessage: ""});
+            }
+        }
+        else{
+            this.setState({notFound: true, errorMessage: res.message});
+        }
            
-    //    });
+       });
   }
 
   dataHandler = (e) =>{
     this.setState({[e.target.name]: e.target.value});
 }  
 
-setUsername = (username) =>{
-    this.setState({username: username});
+setRequest = (request) =>{
+    this.setState({currentRequest: request});
 }
 
     render() { 
@@ -158,7 +178,7 @@ setUsername = (username) =>{
                         <h6 className="card-subtitle mb-2 text-muted">{request.author}</h6>
                         <p className="card-text">{request.message}</p>
                         <p className="card-text">Date: <i>{Moment(request.date_issued).format('YYYY-MM-DD')}</i></p>
-                        <button type="button" className="btn btn-primary" data-bs-toggle="modal" onClick={() => this.setUsername(request.author)} data-bs-target="#exampleModal">
+                        <button type="button" className="btn btn-primary" data-bs-toggle="modal" onClick={() => this.setRequest(request)} data-bs-target="#exampleModal">
                             Increase limit
                         </button>
                         <button type="button" className="btn btn-success ms-2" onClick={() => this.gotToUser(request.author)}>Visit user</button>                       
@@ -169,6 +189,7 @@ setUsername = (username) =>{
             })}
 
             {this.popup()}
+
             </section>
          );
     }
@@ -194,10 +215,10 @@ setUsername = (username) =>{
         const {limit, comment} = this.state;
         return(
             <div className="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div className="modal-dialog">
+            <div className="modal-dialog modal-dialog-centered">
                 <div className="modal-content">
                 <div className="modal-header">
-                    <h5 className="modal-title" id="exampleModalLabel">Modal title</h5>
+                    <h5 className="modal-title" id="exampleModalLabel">Increase book rental limit</h5>
                     <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div className="modal-body">
@@ -223,6 +244,8 @@ setUsername = (username) =>{
             </div>
         )
     }
+
+
 }
  
 export default withRouter(Request);

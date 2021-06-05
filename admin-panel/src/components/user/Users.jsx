@@ -7,11 +7,12 @@ class Users extends Component {
         notFound: false,
         username: "",
         errorMessage: "",
-        page: 1
+        pagination: null
      }
 
     componentDidMount(){
-        this.fetchUsers(0, 25, this.state.username);
+
+        this.fetchUsers(0, 20, this.state.username);
     }
      
     fetchUsers = (page, limit, username) =>{
@@ -28,7 +29,8 @@ class Users extends Component {
                 this.setState({notFound: true, errorMessage: "You have to login to administrator account to get access to this resource"})
             }
             else{
-                this.setState({users: res, notFound: false})
+                this.setState({pagination: res, notFound: false, users: res.content})
+                this.updatePaginationBar();
             }       
         })
   }
@@ -42,9 +44,64 @@ class Users extends Component {
     this.fetchUsers(0, 20, this.state.username);
   }
 
+  nextPage = () =>{
+      if(this.state.pagination.last === false){
+        var nextPage = this.state.pagination.currentPage + 1;
+        if(this.state.pagination.totalPages - 1 === nextPage){
+            const el1 = document.querySelector('#next-page');
+            const el2 = document.querySelector('#li-next');
+            el1.setAttribute("aria-disabled", true);
+            el2.classList.add("disabled");
+        }
+        this.fetchUsers(nextPage, 20, this.state.username);
+        
+      }
+  }
+
+  previousPage = () =>{
+    if(this.state.pagination.first === false){
+      var previousPage = this.state.pagination.currentPage - 1;
+      if(previousPage === 0){
+          const el1 = document.querySelector('#previous-page');
+          const el2 = document.querySelector('#li-previous');
+          el1.setAttribute("aria-disabled", true);
+          el2.classList.add("disabled");
+      }
+      this.fetchUsers(previousPage, 20, this.state.username);
+      
+    }
+}
+
+  updatePaginationBar = () =>{
+    const pagination = document.querySelector('#pagination');
+
+    const next_btn = document.querySelector('#next-page');
+    const next_li = document.querySelector('#li-next');
+
+    const prev_btn = document.querySelector('#previous-page');
+    const prev_li = document.querySelector('#li-previous');
+
+    if(this.state.pagination.totalPages === 1){
+        pagination.classList.add("invisible")
+    }
+    else{
+        pagination.classList.remove("invisible")
+    }
+
+    if(this.state.pagination.first === false){
+        prev_btn.setAttribute("aria-disabled", false);
+        prev_li.classList.remove("disabled");
+    }
+
+    if(this.state.pagination.last === false){
+        next_btn.setAttribute("aria-disabled", false);
+        next_li.classList.remove("disabled");
+    }
+  }
+
     render() { 
         
-        const {users, notFound, errorMessage, page} = this.state;
+        const {users, notFound, errorMessage, pagination} = this.state;
 
         if(!users.length && notFound===false){
             return (<div>Loading...</div>)
@@ -81,7 +138,7 @@ class Users extends Component {
             {this.state.users.map((user, index) =>{
                 return(
                     <tr key={index}>
-                      <th scope="row">{index + 1}</th>
+                      <th scope="row">{index + 1 + (pagination.currentPage * 20) }</th>
                       <td>{user.username}</td>
                       <td>{user.firstName} {user.lastName}</td>
                       <td ><span className="cutText address">{user.address}</span></td>
@@ -100,13 +157,13 @@ class Users extends Component {
             </table>
 
             <div >
-            <ul className="pagination justify-content-center">
-                <li className="page-item disabled">
-                    <button className="page-link" aria-disabled="true">Previous</button>
+            <ul className="pagination justify-content-center" id="pagination">
+                <li className="page-item disabled" id="li-previous">
+                    <button className="page-link" id="previous-page" onClick={() => this.previousPage()}>Previous</button>
                 </li>
-                <li class="page-item"><span className="page-link">{page}</span></li>
-                <li className="page-item ">
-                    <button className="page-link" aria-disabled="true">Next</button>
+                <li class="page-item"><span className="page-link">{pagination.currentPage + 1}</span></li>
+                <li className="page-item " id="li-next">
+                    <button className="page-link" id="next-page" onClick={() => this.nextPage()}>Next</button>
                 </li>
             </ul>
             </div>

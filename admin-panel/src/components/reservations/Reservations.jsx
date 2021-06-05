@@ -8,11 +8,11 @@ class Reservation extends Component {
         username: "",
         notFound: false,
         errorMessage: "",
-        page: 1
+        pagination: null
      }
 
     componentDidMount(){
-        this.fetchReservations(0, 10, this.state.username);
+        this.fetchReservations(0, 15, this.state.username);
     }
      
 
@@ -30,7 +30,7 @@ class Reservation extends Component {
             this.setState({notFound: true, errorMessage: "You have to login to administrator account to get access to this resource"})
         }
         else{
-            this.setState({reservations: res, notFound: false})
+            this.setState({reservations: res.content, notFound: false, pagination: res})
         }       
     })
   }
